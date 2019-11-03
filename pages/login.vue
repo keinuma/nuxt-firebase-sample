@@ -52,6 +52,7 @@ import { createComponent, reactive } from '@vue/composition-api'
 import firebase from '@/plugins/firebase'
 
 export default createComponent({
+  layout: 'auth',
   setup (_, context) {
     const state = reactive({
       email: '',
