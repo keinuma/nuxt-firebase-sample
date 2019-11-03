@@ -1,5 +1,8 @@
 export default {
   mode: 'spa',
+  css: [
+    '@/assets/css/main.scss'
+  ],
   modules: [
     '@nuxt/typescript-build',
     '@nuxtjs/bulma',
