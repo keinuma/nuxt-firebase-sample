@@ -12,7 +12,7 @@ interface Data {
 }
 
 export default Vue.extend({
-  data(): Data {
+  data () : Data {
     return {
       count: 1
     }
