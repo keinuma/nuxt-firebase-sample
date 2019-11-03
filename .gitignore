@@ -21,3 +21,9 @@ newrelic_agent.log
 # @nuxtjs/pwa
 sw.*
 © 2019 GitHub, Inc.
+
+# env
+.env
+
+# Firebase
+.firebase

@@ -4,7 +4,7 @@ export default {
     '@nuxt/typescript-build',
     '@nuxtjs/bulma'
   ],
-  plugins: ['~/plugins/composition-api'],
+  plugins: ['~/plugins/composition-api', '~/plugins/firebase'],
   build: {
     extend (config, ctx) {
       // Run ESLint on save
