@@ -1,6 +1,9 @@
 export default {
   mode: 'spa',
-  modules: ['@nuxt/typescript-build'],
+  modules: [
+    '@nuxt/typescript-build',
+    '@nuxt/bulma'
+  ],
   plugins: ['~/plugins/composition-api'],
   build: {
     extend (config, ctx) {
