@@ -19,10 +19,10 @@ interface Data {
   count: number;
 }
 
-export default Vue.extend({
-  data () : Data {
+export default createComponent({
+  setup () : Data {
     return {
-      count: 1
+      articles: []
     }
   }
 })
