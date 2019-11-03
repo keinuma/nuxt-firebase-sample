@@ -14,12 +14,15 @@
         <p v-if="state.error.code" class="has-text-danger">
           {{ state.error.message }}
         </p>
+        <p v-if="state.message" class="has-text-info mb-spacer-m">
+          {{ state.message }}
+        </p>
         <div class="field">
           <label class="label">
             メールアドレス
           </label>
           <div class="control">
-            <input v-model="email" type="email" class="input" disabled>
+            <input :value="email" type="email" class="input" disabled>
           </div>
         </div>
         <div class="field">
@@ -51,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { createComponent, onMounted, reactive } from '@vue/composition-api'
+import { computed, createComponent, reactive, watch } from '@vue/composition-api'
 import { FirebaseError } from 'firebase'
 import { Author } from '@/types/article'
 import firebase from '@/plugins/firebase'
@@ -59,42 +62,67 @@ import useUserState from '@/services/use-user-state'
 
 interface State {
   author: Author
+  message: string
   error: FirebaseError
 }
 
 export default createComponent({
   layout: 'default',
   setup (_, context) {
-    const { userId, email, author, initialize, setAuthor } = useUserState()
+    const { user, author, error, setAuthor } = useUserState()
     const state = reactive<State>({
       author: { id: '', name: '', account: '', image: '' },
+      message: '',
       error: {
         code: '',
         message: '',
         name: ''
       }
     })
-    onMounted(() => {
-      if (!initialize(state)) {
+    watch(() => error.value, () => {
+      if (error.value !== null && 'code' in error.value) {
         context.root.$router.push('/')
       }
     })
+    watch(() => author.value, () => {
+      if (author.value !== null && 'id' in author.value) {
+        state.author = author.value
+      }
+    })
+    const email = computed(() => {
+      if (user.value === null) { return '' }
+      return user.value.email
+    })
     const onSaveAuthor = async () => {
+      state.message = ''
       const db = firebase.firestore()
-      if (author === null) {
-        await db.collection('authors').add({
+      if (user.value === null) { return }
+      if (author.value === null) {
+        await db.collection('authors').doc(user.value.uid).set({
           ...state.author,
-          id: userId.value
+          id: user.value.uid
         }).catch((err: FirebaseError) => {
           state.error = err
         })
-        if (state.error === null) {
+        if (state.error.code === '') {
           setAuthor(state.author)
+          state.message = '更新が完了しました'
         }
-      } else {}
+      } else {
+        await db.collection('authors').doc(author.value.id).update({
+          ...state.author
+        }).catch((err: FirebaseError) => {
+          state.error = err
+        })
+        if (state.error.code === '') {
+          setAuthor(state.author)
+          state.message = '更新が完了しました'
+        }
+      }
     }
     return {
       state,
+      user,
       email,
       onSaveAuthor
     }

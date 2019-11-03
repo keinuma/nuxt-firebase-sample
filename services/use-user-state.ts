@@ -1,58 +1,49 @@
-import { computed, reactive } from '@vue/composition-api'
+import { reactive, toRefs, watch } from '@vue/composition-api'
+import { FirebaseError } from 'firebase'
 import firebase from '@/plugins/firebase'
-import { Author } from '~/types/article'
+import useAuth from '@/services/use-auth'
+import { Author } from '@/types/article'
 
 type State = {
-  user: firebase.User | null;
+  user: firebase.User | null
   author: Author | null
+  error: FirebaseError | null
 }
 
 export default () => {
-  const userState = reactive<State>({
-    user: null,
-    author: null
+  const { user, loading, error } = useAuth()
+  const state = reactive<State>({
+    user: user.value,
+    author: null,
+    error: null
   })
 
-  const initialize = async (state: any): Promise<boolean> => {
-    userState.user = firebase.auth().currentUser
-    if (userState.user === null) {
-      return false
+  watch(() => loading.value, async () => {
+    if (loading.value) { return }
+    if (user.value === null || error.value !== null) {
+      state.error = error.value
+      return
     }
+    state.user = user.value
     const db = firebase.firestore()
     const snapshot = await db.collection('authors')
-      .where('id', '==', userState.user.uid)
+      .where('id', '==', user.value.uid)
       .get()
-      .catch(() => {
-        return false
+      .catch((err: FirebaseError) => {
+        return err
       })
-    if (typeof snapshot === 'boolean') { return false }
+    if ('code' in snapshot) { return snapshot }
     snapshot.forEach((doc) => {
-      state.author = userState.author = (doc.data() as Author)
+      state.author = state.author = (doc.data() as Author)
     })
-    return true
-  }
+  })
 
   const setAuthor = (author: Author) => {
-    userState.author = author
+    state.author = author
   }
 
-  const userId = computed(() => {
-    if (userState.user === null) { return '' }
-    return userState.user.uid
-  })
-
-  const email = computed(() => {
-    if (userState.user === null) { return '' }
-    return userState.user.email
-  })
-
   return {
-    userId,
-    email,
-    get author () {
-      return userState.author
-    },
-    initialize,
-    setAuthor
+    setAuthor,
+    ...toRefs(state)
   }
 }
