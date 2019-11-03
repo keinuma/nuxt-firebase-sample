@@ -5,6 +5,7 @@ export type Article = {
 }
 
 export type Author = {
+  id: string;
   name: string;
   account: string;
   image: string

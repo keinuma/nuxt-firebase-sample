@@ -42,6 +42,7 @@ export default createComponent({
         content: 'テスト',
         createdAt: dayjs().toISOString(),
         author: {
+          id: '',
           name: 'ぬま',
           account: 'keinuma',
           image: ''
