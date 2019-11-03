@@ -2,7 +2,8 @@ export default {
   mode: 'spa',
   modules: [
     '@nuxt/typescript-build',
-    '@nuxtjs/bulma'
+    '@nuxtjs/bulma',
+    '@nuxtjs/dotenv'
   ],
   plugins: ['~/plugins/composition-api', '~/plugins/firebase'],
   build: {

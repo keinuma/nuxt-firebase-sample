@@ -1,6 +1,7 @@
 import * as firebase from 'firebase/app'
+import 'firebase/auth'
 
-if (firebase.apps.length) {
+if (!firebase.apps.length) {
   firebase.initializeApp({
     apiKey: process.env.NUXT_ENV_API_KEY || '',
     authDomain: process.env.NUXT_ENV_AUTH_DOMAIN || '',
