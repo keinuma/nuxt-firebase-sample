@@ -2,7 +2,7 @@ export default {
   mode: 'spa',
   modules: [
     '@nuxt/typescript-build',
-    '@nuxt/bulma'
+    '@nuxtjs/bulma'
   ],
   plugins: ['~/plugins/composition-api'],
   build: {
