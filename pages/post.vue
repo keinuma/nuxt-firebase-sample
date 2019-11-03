@@ -11,7 +11,10 @@
     </section>
     <section class="section">
       <div class="container">
-        <button class="button is-success">
+        <p v-if="state.error.code" class="has-text-danger">
+          {{ state.error.message }}
+        </p>
+        <button class="button is-success" @click="onPostArticle">
           投稿
         </button>
       </div>
@@ -20,18 +23,47 @@
 </template>
 
 <script lang="ts">
-import { createComponent } from '@vue/composition-api'
+import { createComponent, reactive } from '@vue/composition-api'
+import dayjs from 'dayjs'
+import { FirebaseError } from 'firebase'
+import firebase from '@/plugins/firebase'
 import { Article } from '~/types/article'
 
-interface Data {
-  articles: Article[];
+interface State {
+  article: Article;
+  error: FirebaseError
 }
 
 export default createComponent({
   layout: 'default',
-  setup () : Data {
+  setup () {
+    const state = reactive<State>({
+      article: {
+        content: 'テスト',
+        createdAt: dayjs().toISOString(),
+        author: {
+          name: 'ぬま',
+          account: 'keinuma',
+          image: ''
+        }
+      },
+      error: {
+        code: '',
+        message: '',
+        name: ''
+      }
+    })
+    const onPostArticle = async () => {
+      const db = firebase.firestore()
+      await db.collection('articles').add({
+        ...state.article
+      }).catch((err: FirebaseError) => {
+        state.error = err
+      })
+    }
     return {
-      articles: []
+      state,
+      onPostArticle
     }
   }
 })
