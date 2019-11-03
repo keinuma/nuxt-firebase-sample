@@ -10,8 +10,12 @@
       </div>
     </section>
     <section class="section">
-      <div class="container">
-        <div class="card">
+      <div class="container container-layout">
+        <div
+          v-for="article in state.articles"
+          :key="article.createdAt"
+          class="card card-width"
+        >
           <div class="card-content">
             <div class="media">
               <div class="media-left">
@@ -21,21 +25,24 @@
               </div>
               <div class="media-content">
                 <p class="title is-4">
-                  John Smith
+                  {{ article.author.name }}
                 </p>
                 <p class="subtitle is-6">
-                  @johnsmith
+                  {{ article.author.account }}
                 </p>
               </div>
             </div>
 
             <div class="content">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Phasellus nec iaculis mauris. <a>@bulmaio</a>.
-              <a href="#">#css</a> <a href="#">#responsive</a>
-              <br>
-              <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+              {{ article.content }}
             </div>
+            <footer class="card-footer">
+              <div class="card-footer-item card-footer-layout">
+                <time datetime="2016-1-1">
+                  投稿日: {{ article.createdAt | formatDate }}
+                </time>
+              </div>
+            </footer>
           </div>
         </div>
       </div>
@@ -44,19 +51,45 @@
 </template>
 
 <script lang="ts">
-import { createComponent } from '@vue/composition-api'
+import { onMounted, createComponent, reactive } from '@vue/composition-api'
+import firebase from '@/plugins/firebase'
 import { Article } from '~/types/article'
 
-interface Data {
+interface State {
   articles: Article[];
 }
 
 export default createComponent({
   layout: 'default',
-  setup () : Data {
-    return {
+  setup () {
+    const state = reactive<State>({
       articles: []
+    })
+    onMounted(async () => {
+      const db = firebase.firestore()
+      const querySnapshot = await db.collection('articles').get()
+      querySnapshot.docs.forEach((doc) => {
+        const data = doc.data()
+        state.articles.push((data as Article))
+      })
+    })
+    return {
+      state
     }
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.container-layout {
+  display: flex;
+  justify-content: center;
+}
+.card-width {
+  width: 80%;
+}
+.card-footer-layout {
+  justify-content: flex-end;
+  padding-bottom: 0;
+}
+</style>

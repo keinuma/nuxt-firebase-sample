@@ -8,7 +8,11 @@ export default {
     '@nuxtjs/bulma',
     '@nuxtjs/dotenv'
   ],
-  plugins: ['~/plugins/composition-api', '~/plugins/firebase'],
+  plugins: [
+    '~/plugins/composition-api',
+    '~/plugins/firebase',
+    '~/plugins/filters'
+  ],
   build: {
     extend (config, ctx) {
       // Run ESLint on save
