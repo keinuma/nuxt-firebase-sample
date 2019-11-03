@@ -4,7 +4,7 @@ export type Article = {
   createdAt: string
 }
 
-type Author = {
+export type Author = {
   name: string;
   account: string;
   image: string
