@@ -52,6 +52,7 @@ interface Data {
 }
 
 export default createComponent({
+  layout: 'default',
   setup () : Data {
     return {
       articles: []
