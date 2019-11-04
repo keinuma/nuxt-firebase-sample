@@ -1,0 +1,36 @@
+name: Node CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install, build, and test
+      run: |
+        npm install
+        npm run build
+      env:
+        CI: true
+        NUXT_ENV_API_KEY: ${{ secrets.NUXT_ENV_API_KEY }}
+        NUXT_ENV_AUTH_DOMAIN: ${{ secrets.NUXT_ENV_AUTH_DOMAIN }}
+        NUXT_ENV_DATABASE_URL: ${{ secrets.NUXT_ENV_DATABASE_URL }}
+        NUXT_ENV_PROJECT_ID: ${{ secrets.NUXT_ENV_PROJECT_ID }}
+        NUXT_ENV_STORAGE_BUCKET: ${{ secrets.NUXT_ENV_STORAGE_BUCKET }}
+        NUXT_ENV_MESSAGING_SENDER_ID: ${{ secrets.NUXT_ENV_MESSAGING_SENDER_ID }}
+        NUXT_ENV_APP_ID: ${{ secrets.NUXT_ENV_APP_ID }}
+    - name: deploy firebase
+      run: |
+        npm install -g firebase-tools
+        firebase deploy --token=${{ secrets.FIREBASE_TOKEN }}
