@@ -16,7 +16,7 @@
           :key="article.createdAt"
           class="card card-width"
         >
-          <div class="card-content">
+          <div class="card-content card-white-space">
             <div class="media">
               <div class="media-left">
                 <figure class="image is-48x48">
@@ -83,10 +83,18 @@ export default createComponent({
 <style lang="scss" scoped>
 .container-layout {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 }
 .card-width {
   width: 80%;
+  &:not(:first-child){
+    margin-top: 3rem;
+  }
+}
+.card-white-space {
+  padding: 1.5rem 3rem;
 }
 .card-footer-layout {
   justify-content: flex-end;
