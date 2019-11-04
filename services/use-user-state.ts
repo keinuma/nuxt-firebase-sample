@@ -19,6 +19,7 @@ export default () => {
   })
 
   watch(() => loading.value, async () => {
+    // 認証取得処理が終了したらユーザー情報を取得
     if (loading.value) { return }
     if (user.value === null || error.value !== null) {
       state.error = error.value
@@ -26,16 +27,14 @@ export default () => {
     }
     state.user = user.value
     const db = firebase.firestore()
-    const snapshot = await db.collection('authors')
-      .where('id', '==', user.value.uid)
+    const result = await db.collection('authors')
+      .doc(user.value.uid)
       .get()
       .catch((err: FirebaseError) => {
         return err
       })
-    if ('code' in snapshot) { return snapshot }
-    snapshot.forEach((doc) => {
-      state.author = state.author = (doc.data() as Author)
-    })
+    if ('code' in result || !result.exists) { return result }
+    state.author = (result.data() as Author)
   })
 
   const setAuthor = (author: Author) => {
