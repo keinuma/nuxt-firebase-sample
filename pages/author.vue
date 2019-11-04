@@ -98,6 +98,7 @@ export default createComponent({
       const db = firebase.firestore()
       if (user.value === null) { return }
       if (author.value === null) {
+        // 初回登録処理
         await db.collection('authors').doc(user.value.uid).set({
           ...state.author,
           id: user.value.uid
